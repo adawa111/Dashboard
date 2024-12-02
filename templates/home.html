@@ -9,7 +9,7 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100"> <!-- Flexbox para toda la página -->
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
@@ -28,17 +28,23 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#settings">Configuración</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">Cerrar Sesión</a>
+                    </li>                    
                 </ul>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <div class="container my-4">
+    <div class="container-fluid my-4 flex-grow-1"> <!-- Clase flex-grow-1 para que el contenido crezca -->
+        <div class="container my-4">
+            <h1 class="text-center my-4">Datos recopilados del sensor</h1>
+        </div>
         <div class="row">
             <!-- Gráfica de CO2 -->
             <div class="col-lg-6 mb-4">
-                <h3 class="text-center">Niveles de CO2</h3>
+                <h3 class="text-center my-4">Niveles de CO2</h3>
                 <div class="card">
                     <div class="card-body">
                         <canvas id="co2Chart"></canvas>
@@ -47,7 +53,7 @@
             </div>
             <!-- Gráfica de Temperatura -->
             <div class="col-lg-6 mb-4">
-                <h3 class="text-center">Temperatura del Sensor</h3>
+                <h3 class="text-center my-4">Temperatura del Sensor</h3>
                 <div class="card">
                     <div class="card-body">
                         <canvas id="tempChart"></canvas>
@@ -85,7 +91,7 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-dark text-center text-white py-4">
+    <footer class="bg-dark text-center text-white py-4 mt-auto"> <!-- mt-auto empuja el footer hacia abajo -->
         <div class="container">
             <p class="mb-1">© 2024 Monitoreo Ambiental. Todos los derechos reservados.</p>
             <p>
