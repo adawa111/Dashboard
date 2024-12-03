@@ -35,7 +35,7 @@ users = {
 def dashboard():
     # Verifica si el usuario ha iniciado sesión
     if 'user' in session:
-        try:
+        '''try:
             docs = db.collection('recopilar_datos').stream()
             for doc in docs:
                 data = doc.to_dict()
@@ -49,7 +49,7 @@ def dashboard():
                 print("-" * 20)
         except Exception as e:
             print(f"Error al acceder a Firestore: {e}")
-
+        '''
         return render_template('home.html', user=session['user'])
     return redirect(url_for('login'))
 
@@ -84,6 +84,27 @@ def without():
 def handle_invalid_path(invalid_path):
     # Redirigir a la página principal (dashboard)
     return redirect(url_for('dashboard'))
+
+#esto es para enviar los datos al dashboard en tiempo real owo
+@app.route('/api/data', methods=['GET'])
+def get_data():
+    try:
+        docs = db.collection('recopilar_datos').stream()
+        data = []
+
+        for doc in docs:
+            document = doc.to_dict()
+            data.append({
+                'co2_ppm': document.get('co2_ppm', -128),
+                'temperature': document.get('temperature', -128),
+                'timestamp': document.get('timestamp', 'Sin fecha')
+            })
+
+        return {"data": data}, 200
+    except Exception as e:
+        print(f"Error al acceder a Firestore: {e}")
+        return {"error": str(e)}, 500
+
 
 #cambio port a 8080
 if __name__ == '__main__':
