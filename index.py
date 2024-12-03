@@ -1,9 +1,29 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask import Flask, render_template, request, redirect, url_for, session
 
+import firebase_admin
+from firebase_admin import credentials,auth,firestore
+
+cred = credentials.Certificate("dashboard-temas-iot-firebase-adminsdk-z4sc1-9d8cd4dd29.json")
+firebase_app = firebase_admin.initialize_app(cred)
+db = firestore.client()
+
 app = Flask(__name__)
 app.secret_key = 'tu_clave_secreta'  # Clave para manejar las sesiones
 
+""" 
+# Crea un documento en la colección "users"
+doc_ref = db.collection('users').document('alopez')
+doc_ref.set({
+
+    'first': 'Alan',
+
+    'last': 'Lopez',
+
+    'born': 1997
+
+})
+""" 
 # Usuarios válidos
 users = {
     "admin": "123456",
@@ -15,9 +35,23 @@ users = {
 def dashboard():
     # Verifica si el usuario ha iniciado sesión
     if 'user' in session:
+        try:
+            docs = db.collection('recopilar_datos').stream()
+            for doc in docs:
+                data = doc.to_dict()
+                co2_ppm = data.get('co2_ppm', 'No data')
+                temperature = data.get('temperature', 'No data')
+                timestamp = data.get('timestamp', 'No data')
+                print(f"Documento ID: {doc.id}")
+                print(f"  CO2 PPM: {co2_ppm}")
+                print(f"  Temperatura: {temperature}")
+                print(f"  Timestamp: {timestamp}")
+                print("-" * 20)
+        except Exception as e:
+            print(f"Error al acceder a Firestore: {e}")
+
         return render_template('home.html', user=session['user'])
     return redirect(url_for('login'))
-app.secret_key = 'tu_clave_secreta'  # Clave para manejar las sesiones
 
 # Ruta para el inicio de sesión
 @app.route('/login', methods=['GET', 'POST'])
@@ -54,4 +88,5 @@ def handle_invalid_path(invalid_path):
 #cambio port a 8080
 if __name__ == '__main__':
     app.run(host='0.0.0.0',port='8080',debug=True)
+
 
