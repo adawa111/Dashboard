@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session
 
 app = Flask(__name__)
 app.secret_key = 'tu_clave_secreta'  # Clave para manejar las sesiones
@@ -30,8 +31,46 @@ def dashboard():
     if 'user' in session:
         return render_template('home.html', user=session['user'])
     return redirect(url_for('login'))
+app.secret_key = 'tu_clave_secreta'  # Clave para manejar las sesiones
+
+# Usuarios válidos
+users = {
+    "admin": "123456",
+    "user": "654321"
+}
+
+# Ruta para el inicio de sesión
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        # Verifica si las credenciales son correctas
+        if username in users and users[username] == password:
+            session['user'] = username  # Guarda el usuario en la sesión
+            return redirect(url_for('dashboard'))
+        else:
+            return "Usuario o contraseña incorrectos", 401
+    return render_template('login.html')
+
+# Ruta del dashboard
+@app.route('/dashboard')
+def dashboard():
+    # Verifica si el usuario ha iniciado sesión
+    if 'user' in session:
+        return render_template('home.html', user=session['user'])
+    return redirect(url_for('login'))
 
 @app.route('/')
+def without():
+    return redirect(url_for('dashboard'))
+
+
+# Ruta para cerrar sesión
+@app.route('/logout')
+def logout():
+    session.pop('user', None)  # Elimina al usuario de la sesión
+    return redirect(url_for('login'))
 def without():
     return redirect(url_for('dashboard'))
 
